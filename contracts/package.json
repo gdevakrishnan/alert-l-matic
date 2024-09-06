@@ -1,0 +1,15 @@
+{
+  "name": "alert-l-matic-contracts",
+  "version": "1.0.0",
+  "description": "Contracts for maintaining the supply chain management for our application alert-l-matic",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Team Tech-Immortals",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.10"
+  }
+}
