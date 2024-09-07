@@ -5,7 +5,7 @@ import { style } from '../static/style';
 function About() {
     return (
         <View>
-            <Text>Details Screen</Text>
+            <Text>About Screen</Text>
         </View>
     )
 }
