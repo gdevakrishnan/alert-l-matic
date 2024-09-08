@@ -26,6 +26,10 @@ function Navbar(props) {
                 onPress={() => navigation.navigate('About')}
             />
             <DrawerItem
+                label="AI Help"
+                onPress={() => navigation.navigate('Chat')}
+            />
+            <DrawerItem
                 label="Signup"
                 onPress={() => navigation.navigate('Signup')}
             />

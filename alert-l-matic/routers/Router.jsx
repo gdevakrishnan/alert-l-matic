@@ -7,6 +7,7 @@ import Home from '../pages/Home';
 import About from '../pages/About';
 import Signup from '../pages/Signup';
 import Signin from '../pages/Signin';
+import Chatbot from '../pages/Chatbot';
 
 function Router() {
   const Drawer = createDrawerNavigator();
@@ -40,6 +41,7 @@ function Router() {
           <Drawer.Screen name="About" component={About} />
           <Drawer.Screen name="Signup" component={Signup} />
           <Drawer.Screen name="Signin" component={Signin} />
+          <Drawer.Screen name="Chat" component={Chatbot} />
         </Drawer.Navigator>
       </NavigationContainer>
       
