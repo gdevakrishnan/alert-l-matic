@@ -1,37 +1,80 @@
-import pandas as pd
-import joblib
+import json
+import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
+import joblib
 import os
 
+# First Aid Model Training
+
 # Load the dataset
-df = pd.read_csv('dataset/disaster_assistance_dataset.csv')
+with open('dataset/first_aid_dataset.json', 'r') as file:
+    data = json.load(file)
 
-# Inspect the data
-print(df.head())
+# Extract intents, patterns, and responses
+patterns = []
+responses = []
 
-# Prepare the data for training
-texts = df['Response']
-labels = df['Intent']
+for intent in data['intents']:
+    tag = intent['tag']
+    for pattern in intent['patterns']:
+        patterns.append(pattern)
+        responses.append(tag)
 
-# Split the data into training and test sets
-X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2, random_state=42)
+# Split the dataset
+X_train, X_test, y_train, y_test = train_test_split(patterns, responses, test_size=0.2, random_state=42)
 
-# Define the pipeline for vectorization and model training
-pipeline = Pipeline([
-    ('vect', CountVectorizer()),  # Convert text to a matrix of token counts
-    ('clf', MultinomialNB())      # Naive Bayes classifier for multinomial models
+# Create a pipeline for text classification
+model = Pipeline([
+    ('vect', CountVectorizer()),
+    ('clf', MultinomialNB())
 ])
 
 # Train the model
-pipeline.fit(X_train, y_train)
+model.fit(X_train, y_train)
 
 os.makedirs('model', exist_ok=True)
 
-# Save the trained model
-model_path = 'model/disaster_chatbot_model.pkl'
-joblib.dump(pipeline, model_path)
+# Save the model
+joblib.dump(model, 'model/first_aid_model.pkl')
 
-print(f"Model trained and saved as {model_path}.")
+print("First AId Model trained and saved successfully.")
+
+#############################################
+
+# Disaster preparedness train model
+
+# Load the dataset
+with open('dataset/disaster_preparedness_dataset.json', 'r') as file:
+    data = json.load(file)
+
+# Extract intents, patterns, and responses
+patterns = []
+responses = []
+
+for intent in data['intents']:
+    tag = intent['tag']
+    for pattern in intent['patterns']:
+        patterns.append(pattern)
+        responses.append(tag)
+
+# Split the dataset
+X_train, X_test, y_train, y_test = train_test_split(patterns, responses, test_size=0.2, random_state=42)
+
+# Create a pipeline for text classification
+model = Pipeline([
+    ('vect', CountVectorizer()),
+    ('clf', MultinomialNB())
+])
+
+# Train the model
+model.fit(X_train, y_train)
+
+os.makedirs('model', exist_ok=True)
+
+# Save the model
+joblib.dump(model, 'model/disaster_preparedness_model.pkl')
+
+print("Disaster Preparedness Model trained and saved successfully.")
