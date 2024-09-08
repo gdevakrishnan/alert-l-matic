@@ -1,76 +1,126 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import validator from 'validator';
+import { createUserDetails } from '../serviceWorker/serviceWorker';
 
-export default function Signup() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
+export default function Signup({ navigation }) {
+  const initialState = {
+    "uname": "",
+    "gmail": "",
+    "pwd": "",
+    "cpwd": ""
+  }
+  const [state, setState] = useState(initialState);
   const handleSignUp = () => {
-    // Handle sign-up logic here
-    console.log('Sign Up:', { firstName, lastName, email, password });
+    if (state.uname.trim() == "" || state.gmail.trim() == "" || state.pwd.trim() == "" || state.cpwd.trim() == "") {
+      alert("Enter all the fields");
+      return;
+    }
+
+    if (state.pwd.trim() !== state.cpwd.trim()) {
+      alert("Password Mismatch");
+      return;
+    }
+
+    if (!(validator.isEmail(state.gmail.trim()))) {
+      setMsg("Invalid Email");
+      return;
+    }
+
+    createUserDetails(state)
+    .then((response) => {
+      alert(response.message);
+      if (response.message === "Registered Successfully") {
+        navigation.navigate('Signin');
+        setState(initialState);
+      }
+    })
+    .catch((e) => console.log(e.message));
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="First name"
-        value={firstName}
-        onChangeText={setFirstName}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput 
+          placeholder="Username"
+          style={styles.input}
+          onChangeText={(newText) => setState({...state, "uname": newText})}
+          value={state.uname}
+          />
+        <MaterialIcons
+          name="person-outline"
+          size={24}
+          color="gray"
+          style={styles.icon}
+          />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Last name"
-        value={lastName}
-        onChangeText={setLastName}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput 
+          placeholder="Email" 
+          style={styles.input} 
+          onChangeText={(newText) => setState({...state, "gmail": newText})}
+          value={state.gmail}
+        />
+        <MaterialIcons
+          name="email"
+          size={24}
+          color="gray"
+          style={styles.icon}
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-
-      <View style={styles.passwordContainer}>
+      <View style={styles.inputContainer}>
         <TextInput
-          style={styles.passwordInput}
           placeholder="Password"
           secureTextEntry={true}
-          value={password}
-          onChangeText={setPassword}
+          style={styles.input}
+          onChangeText={(newText) => setState({...state, "pwd": newText})}
+          value={state.pwd}
         />
-        <FontAwesome name="lock" size={20} color="gray" style={styles.icon} />
+        <MaterialIcons
+          name="lock-outline"
+          size={24}
+          color="gray"
+          style={styles.icon}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Confirm Password"
+          secureTextEntry={true}
+          style={styles.input}
+          onChangeText={(newText) => setState({...state, "cpwd": newText})}
+          value={state.cpwd}
+        />
+        <MaterialIcons
+          name="lock-outline"
+          size={24}
+          color="gray"
+          style={styles.icon}
+        />
       </View>
 
       <Text style={styles.termsText}>
         By clicking sign up, you agree to Alert-L-Matic's User Agreement, Privacy Policy, and Cookie Policy.
       </Text>
 
-      <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-        <Text style={styles.signUpButtonText}>Sign Up</Text>
-      </TouchableOpacity>
-
-      <View style={styles.signInContainer}>
-        <Text>Already have an account? </Text>
-        <TouchableOpacity>
-          <Text style={styles.signInText}>Sign-in</Text>
+      <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 10 }}>
+        <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+          <Text style={styles.signUpButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.orText}>or</Text>
-
-      <TouchableOpacity style={styles.googleSignInButton}>
-        <FontAwesome name="google" size={20} color="white" />
-        <Text style={styles.googleSignInButtonText}>Sign in with Google</Text>
-      </TouchableOpacity>
+      <View style={styles.signInContainer}>
+        <Text>Already have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Signin')}>
+          <Text style={styles.signInText}>Sign-in</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -121,8 +171,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#28a745',
     paddingVertical: 15,
     borderRadius: 100,
-    marginBottom: 10,
-    marginLeft: 85,
     justifyContent: "center",
     textAlign: 'center',
   },
@@ -160,5 +208,21 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 10,
+  },
+  icon: {
+    marginLeft: 10,
   },
 });

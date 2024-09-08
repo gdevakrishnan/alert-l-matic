@@ -9,14 +9,14 @@ import Signup from '../pages/Signup';
 import Signin from '../pages/Signin';
 import Chatbot from '../pages/Chatbot';
 
-function Router() {
+function Router({ userDetails }) {
   const Drawer = createDrawerNavigator();
 
   return (
     <Fragment>
       <NavigationContainer>
         <Drawer.Navigator
-          drawerContent={props => <Navbar {...props} />}
+          drawerContent={props => <Navbar {...props} userDetails={userDetails}/>}
           screenOptions={{
             drawerStyle: {
               backgroundColor: '#fff', // Light background color for the drawer

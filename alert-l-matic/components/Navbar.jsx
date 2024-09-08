@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Create a custom drawer content component - Navbar
 function Navbar(props) {
     const {
-        navigation
+        navigation,
+        userDetails
     } = props;
 
     return (
@@ -15,7 +17,7 @@ function Navbar(props) {
             source={{ uri: 'https://example.com/logo.png' }} // Replace with your logo URL
                   style={styles.logo}
             /> */}
-                <Text style={styles.logoText}>LOGO</Text>
+                <Text style={styles.logoText}>Alert-L-Matic</Text>
             </View>
             <DrawerItem
                 label="Home"
@@ -25,18 +27,31 @@ function Navbar(props) {
                 label="About"
                 onPress={() => navigation.navigate('About')}
             />
-            <DrawerItem
-                label="AI Help"
-                onPress={() => navigation.navigate('Chat')}
-            />
-            <DrawerItem
-                label="Signup"
-                onPress={() => navigation.navigate('Signup')}
-            />
-            <DrawerItem
-                label="Signin"
-                onPress={() => navigation.navigate('Signin')}
-            />
+            {
+                (userDetails) ? (
+                    <Fragment>
+                        <DrawerItem
+                            label="AI Help"
+                            onPress={() => navigation.navigate('Chat')}
+                        />
+                        <DrawerItem
+                            label="Logout"
+                            onPress={() => AsyncStorage.removeItem('token')}
+                        />
+                    </Fragment>
+                ) : (
+                    <Fragment>
+                        <DrawerItem
+                            label="Signup"
+                            onPress={() => navigation.navigate('Signup')}
+                        />
+                        <DrawerItem
+                            label="Signin"
+                            onPress={() => navigation.navigate('Signin')}
+                        />
+                    </Fragment>
+                )
+            }
         </DrawerContentScrollView>
     );
 }

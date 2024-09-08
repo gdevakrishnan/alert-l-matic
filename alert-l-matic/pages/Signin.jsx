@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,15 +8,37 @@ import {
   SafeAreaView,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Button } from "react-native-paper";
+import validator from "validator";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUserDetails } from "../serviceWorker/serviceWorker";
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
+  const initialState = {
+    "uname": "",
+    "gmail": "",
+    "pwd": ""
+  }
+  const [state, setState] = useState(initialState);
+
   const handleLogin = () => {
-    console.log("Login button pressed");
-  };
+    if (state.uname.trim() == "" || state.gmail.trim() == "" || state.pwd.trim() == "") {
+      alert("Enter all the fields");
+      return;
+    }
 
-  const handleGoogleSignIn = async () => {
-    console.log("SignIn with Google pressed");
+    if (!(validator.isEmail(state.gmail.trim()))) {
+      setMsg("Invalid Email");
+      return;
+    }
+
+    getUserDetails(state)
+      .then((response) => {
+        alert(response.message);
+        if (response.message === "Login Successfully") {
+          AsyncStorage.setItem("token", response.token);
+          navigation.navigate('Home');
+        }
+      });
   };
 
   return (
@@ -24,9 +46,21 @@ const LoginScreen = () => {
       <Text style={styles.title}>Login</Text>
 
       <View style={styles.inputContainer}>
-        <TextInput placeholder="User name" style={styles.input} />
+        <TextInput placeholder="Username" style={styles.input} onChangeText={(newText) => setState({ ...state, "uname": newText })}
+          value={state.uname} />
         <MaterialIcons
           name="person-outline"
+          size={24}
+          color="gray"
+          style={styles.icon}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput placeholder="Email" style={styles.input} onChangeText={(newText) => setState({...state, "gmail": newText})}
+          value={state.gmail}/>
+        <MaterialIcons
+          name="email"
           size={24}
           color="gray"
           style={styles.icon}
@@ -38,6 +72,8 @@ const LoginScreen = () => {
           placeholder="Password"
           secureTextEntry={true}
           style={styles.input}
+          onChangeText={(newText) => setState({...state, "pwd": newText})}
+          value={state.pwd}
         />
         <MaterialIcons
           name="lock-outline"
@@ -47,30 +83,18 @@ const LoginScreen = () => {
         />
       </View>
 
-      <TouchableOpacity>
-        <Text style={styles.forgotPassword}>Forgot password?</Text>
-      </TouchableOpacity>
-
-      <Button mode="contained" style={styles.loginButton} onPress={handleLogin}>
-        Login
-      </Button>
-
-      <TouchableOpacity
-        style={styles.googleButton}
-        onPress={handleGoogleSignIn}
-      >
-        <MaterialIcons size={24} color="gray" />
-        <Text style={styles.googleText}>Sign in with Google</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.orText}>or</Text>
-
-      <Text style={styles.signUpText}>
-        New account?
-        <TouchableOpacity>
-          <Text style={styles.signUpLink}> Sign-up.</Text>
+      <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 10 }}>
+        <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
+          <Text style={styles.signInButtonText}>Sign In</Text>
         </TouchableOpacity>
-      </Text>
+      </View>
+
+      <View style={styles.signInContainer}>
+        <Text>Don't have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+          <Text style={styles.signInText}>Sign-up</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -144,6 +168,29 @@ const styles = StyleSheet.create({
   },
   signUpLink: {
     color: "#3b7c3a",
+  },
+  signInButton: {
+    width: 200,
+    backgroundColor: '#28a745',
+    paddingVertical: 15,
+    borderRadius: 100,
+    justifyContent: "center",
+    textAlign: 'center',
+  },
+  signInButtonText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    justifyContent: "center",
+    textAlign: 'center',
+  },
+  signInContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  signInText: {
+    color: '#007bff',
   },
 });
 

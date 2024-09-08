@@ -14,3 +14,21 @@ export const chat = async (chatDetails) => {
         throw error;
     }
 };
+
+export const createUserDetails = async (userDetails) => {
+    const task = await axios.post(`${BASE_URL}/user/register`, userDetails);
+    const response = task.data;
+    return response;
+}
+
+export const getUserDetails = async (userDetails) => {
+    const task = await axios.post(`${BASE_URL}/user/login`, userDetails);
+    const response = task.data;   
+    return response;
+}
+
+export const userVerify = async (userDetails) => {
+    const task = await axios.post(`${BASE_URL}/user/user_verify`, userDetails);
+    const response = task.data;
+    return response;
+}
