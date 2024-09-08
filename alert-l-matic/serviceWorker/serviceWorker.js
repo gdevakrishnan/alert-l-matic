@@ -11,7 +11,6 @@ export const chat = async (chatDetails) => {
         return response;
     } catch (error) {
         console.error('Error during the request:', error);
-        // Optionally, handle the error or rethrow it
-        throw error; // Rethrow the error if you want to propagate it
+        throw error;
     }
 };
